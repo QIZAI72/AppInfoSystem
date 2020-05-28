@@ -1,3 +1,4 @@
+
 package com.jbit.test;
 
 import com.jbit.pojo.DevUser;
@@ -16,8 +17,8 @@ public class T {
     private DevUserService devUserService;
 
     @Test
-    public void test() {
-        DevUser user = devUserService.queryLogin("test001","1234567");
-        System.out.println("user = "+user);
+    public void test_01() {
+        DevUser user = devUserService.queryLogin("test001", "123456");
+        System.out.println("user = " + user);
     }
 }

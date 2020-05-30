@@ -2,9 +2,11 @@ package com.jbit.web;
 
 import com.jbit.entity.JsonResult;
 import com.jbit.pojo.AppInfo;
+import com.jbit.pojo.AppVersion;
 import com.jbit.pojo.DevUser;
 import com.jbit.service.AppCategoryService;
 import com.jbit.service.AppInfoService;
+import com.jbit.service.AppVersionService;
 import com.jbit.service.DataDictionaryService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,48 @@ public class AppInfoController {
 
     @Resource
     private DataDictionaryService dataDictionaryService;
+
+    @Resource
+    private AppVersionService appVersionService;
+
+    @PostMapping("addversionsave")
+    public String addversionsave(AppVersion appVersion, MultipartFile a_downloadLink, HttpSession session){
+        // 1.实现文件上传 (服务器 tomcat)
+        String server_path = session.getServletContext().getRealPath("/statics/uploadfiles/");
+        // 验证大小和图片规格 [略]
+        try {
+            a_downloadLink.transferTo(new File(server_path,a_downloadLink.getOriginalFilename()));
+        } catch (IOException e) {
+        }
+        // 处理其余数据
+        DevUser devUser = (DevUser) session.getAttribute("devuser");
+        appVersion.setDownloadlink("/statics/uploadfiles/"+a_downloadLink.getOriginalFilename());
+        appVersion.setCreatedby(devUser.getId());
+        appVersion.setCreationdate(new  Date());
+        appVersion.setModifydate(new Date());
+        appVersion.setApkfilename(a_downloadLink.getOriginalFilename());
+        appVersion.setApklocpath(server_path+a_downloadLink.getOriginalFilename());
+        appVersionService.save(appVersion);
+        // 更新版本号
+        AppInfo appInfo = new AppInfo();
+        appInfo.setId(appVersion.getAppid());
+        appInfo.setVersionid(appVersion.getId());
+        appInfoService.update(appInfo);
+        return "redirect:/dev/app/appversionadd/"+appVersion.getAppid();
+    }
+
+    /**
+     * 跳转添加版本信息
+     * @param id
+     * @param model
+     * @return
+     */
+    @GetMapping("appversionadd/{id}")
+    public String appversionadd(@PathVariable Long id,Model model){
+        model.addAttribute("appVersionList",appVersionService.queryByAppId(id));
+        model.addAttribute("appid",id);
+        return "developer/appversionadd";
+    }
 
     @GetMapping("delfile")
     @ResponseBody
@@ -86,7 +130,7 @@ public class AppInfoController {
     @PostMapping("/appinfoadd")
     public String appinfoadd(HttpSession session,AppInfo appInfo, MultipartFile a_logoPicPath) {
         // 1.实现文件上传 (服务器 tomcat)
-        String server_path = session.getServletContext().getRealPath("/statics/uploadfiles");
+        String server_path = session.getServletContext().getRealPath("/statics/uploadfiles/");
         // 验证大小和图片规格 [略]
         try {
             a_logoPicPath.transferTo(new File(server_path,a_logoPicPath.getOriginalFilename()));

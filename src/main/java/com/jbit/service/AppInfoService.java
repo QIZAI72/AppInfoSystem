@@ -66,7 +66,9 @@ public class AppInfoService {
             criteria.andEqualTo("categorylevel3",queryCategoryLevel3);
         }
         criteria.andEqualTo("devid",devId);
+        example.orderBy("creationdate").desc();
         List<AppInfo> appInfos = appInfoMapper.selectByExample(example);
+        // 绑定其它数据
         bindData(appInfos);
         //处理分页
         return new PageInfo<>(appInfos);

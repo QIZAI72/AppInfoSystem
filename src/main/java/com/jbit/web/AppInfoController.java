@@ -35,6 +35,100 @@ public class AppInfoController {
     @Resource
     private AppVersionService appVersionService;
 
+    /**
+     * App上下架
+     * @param appId
+     * @param type
+     * @return
+     */
+    @PutMapping("sale/{appId}/{type}")
+    @ResponseBody
+    public JsonResult sale(@PathVariable Long appId,@PathVariable String type){
+        AppInfo appInfo = new AppInfo();
+        appInfo.setId(appId);
+        if (type.equals("open")){
+            // 上架
+            appInfo.setStatus(4L);
+        }else if(type.equals("close")){
+            // 下架
+            appInfo.setStatus(5L);
+        }
+        int result = appInfoService.update(appInfo);
+        if (result!=0){
+            return new JsonResult(true);
+        }
+        return new JsonResult(false);
+    }
+
+    @GetMapping("delapp")
+    @ResponseBody
+    public JsonResult delapp(Long id){
+        int result = appInfoService.delete(id);
+        if (result !=0 ){
+            return new JsonResult(true);
+        }
+        return new JsonResult(false);
+    }
+
+    /**
+     * 查看App信息
+     * @param model
+     * @param id
+     * @return
+     */
+    @GetMapping("appview/{id}")
+    public String appview(Model model,@PathVariable Long id){
+        model.addAttribute("appInfo",appInfoService.queryById(id));
+        model.addAttribute("appVersionList",appVersionService.queryByAppId(id));
+        return "developer/appinfoview";
+    }
+
+    /**
+     * app 版本修改
+     *
+     * */
+    @PostMapping("/appversionmodifysave")
+    public String appversionmodifysave(HttpSession session,AppVersion appVersion, MultipartFile attach){
+        if (!attach.isEmpty()){
+            //1.实现上传 （获取服务器 Tomcat 位置需要session 去取） session 是服务器的对象       这是绝对路径
+            String server_path=session.getServletContext().getRealPath("/statics/uploadfiles/");
+            // 验证图片大小规格[略]
+            try {
+                //文件上传了
+                attach.transferTo(new File(server_path,attach.getOriginalFilename()));
+                //相对路径 加上传文件名字
+                appVersion.setDownloadlink("/statics/uploadfiles/"+attach.getOriginalFilename());
+                //绝对路径 加上传文件名字
+                appVersion.setApkfilename(attach.getOriginalFilename());
+                appVersion.setApklocpath(server_path+attach.getOriginalFilename());
+            } catch (IOException e) {
+            }
+        }
+        //3. App版本修改
+        DevUser devuser = (DevUser) session.getAttribute("devuser");
+        appVersion.setModifydate(new Date());
+        appVersion.setModifyby(devuser.getId());
+        appVersionService.update(appVersion);
+        return "redirect:/dev/app/list";
+
+    }
+
+    /**
+     * 跳转更新版本信息页面
+     * @param model
+     * @param vid
+     * @param aid
+     * @return
+     */
+    @GetMapping("appversionmodify")
+    public String appversionmodify(Model model,Long vid,Long aid){
+        // 查询所有版本信息
+        model.addAttribute("appVersionList",appVersionService.queryByAppId(aid));
+        // 查询最新的版本信息
+        model.addAttribute("appVersion",appVersionService.queryById(vid));
+        return "developer/appversionmodify";
+    }
+
     @PostMapping("addversionsave")
     public String addversionsave(AppVersion appVersion, MultipartFile a_downloadLink, HttpSession session){
         // 1.实现文件上传 (服务器 tomcat)
@@ -45,9 +139,9 @@ public class AppInfoController {
         } catch (IOException e) {
         }
         // 处理其余数据
-        DevUser devUser = (DevUser) session.getAttribute("devuser");
+        DevUser devuser = (DevUser) session.getAttribute("devuser");
         appVersion.setDownloadlink("/statics/uploadfiles/"+a_downloadLink.getOriginalFilename());
-        appVersion.setCreatedby(devUser.getId());
+        appVersion.setCreatedby(devuser.getId());
         appVersion.setCreationdate(new  Date());
         appVersion.setModifydate(new Date());
         appVersion.setApkfilename(a_downloadLink.getOriginalFilename());
@@ -74,27 +168,48 @@ public class AppInfoController {
         return "developer/appversionadd";
     }
 
+    /**
+     *  删除图片
+     *
+     * */
     @GetMapping("delfile")
     @ResponseBody
     public JsonResult delfile(Long id,String flag){
-        if (flag.equals("log")){ // 删除logo
+        if (flag.equals("logo")){
+            //先用id查询到 是那个qpp里面的ID然后在 通过绝对路径删除掉    io流删除
             AppInfo appInfo = appInfoService.queryById(id);
-            // 通过绝对路径删除图片
             try {
-                File file = new File(appInfo.getLogolocpath());
-                file.delete(); // 删除文件
-                // 清空数据库存储值
-                appInfo.setLogolocpath("");
+                File file=new File(appInfo.getLogolocpath());
+                //删除 文件
+                file.delete();
+                //清空数据库 储存值
                 appInfo.setLogopicpath("");
+                appInfo.setLogolocpath("");
                 appInfoService.update(appInfo);
                 return new JsonResult(true);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return new JsonResult(false);
             }
+        }else if (flag.equals("apk")){
+            //删除APP版本信息 里面的apk文件
+            try {
+                AppVersion appVersion = appVersionService.queryById(id);
+                // 将文件 路径存放在 file 然后在本地中删除  在就清空数据库( 修改)
+                File file=new File(appVersion.getDownloadlink());
+                file.delete();
+                //清空数据库
+                appVersion.setDownloadlink("");
+                appVersion.setApklocpath("");
+                appVersion.setApkfilename("");
+                appVersionService.update(appVersion);
+                return new JsonResult(true);
+
+            } catch (Exception e) {
+                return new JsonResult(false);
+            }
+
         }
         return new JsonResult(false);
-
-
     }
 
     /**
@@ -149,30 +264,33 @@ public class AppInfoController {
     }
 
     /**
-     * APP 修改
-     * @return
-     */
+     * app 修改
+     *
+     * */
     @PostMapping("/appinfomodify")
-    public String appinfomodify(HttpSession session,AppInfo appInfo, MultipartFile attach) {
-        if (!attach.isEmpty()) {
-            // 1.实现文件上传 (服务器 tomcat)
-            String server_path = session.getServletContext().getRealPath("/statics/uploadfiles");
-            // 验证大小和图片规格 [略]
+    public String appinfomodify(HttpSession session,AppInfo appInfo, MultipartFile attach){
+        if (!attach.isEmpty()){
+            //1.实现上传 （获取服务器 Tomcat 位置需要session 去取） session 是服务器的对象       这是绝对路径
+            String server_path=session.getServletContext().getRealPath("/statics/uploadfiles/");
             try {
+                //文件上传了
                 attach.transferTo(new File(server_path,attach.getOriginalFilename()));
+                //相对路径 加上传文件名字
                 appInfo.setLogopicpath("/statics/uploadfiles/"+attach.getOriginalFilename());
+                //绝对路径 加上传文件名字
                 appInfo.setLogolocpath(server_path+attach.getOriginalFilename());
             } catch (IOException e) {
             }
         }
-        // 2.app修改
+        //3. App修改
         DevUser devuser = (DevUser) session.getAttribute("devuser");
         appInfo.setUpdatedate(new Date());
         appInfo.setDevid(devuser.getId());
-        appInfo.setModifyby(devuser.getId());
-        appInfo.setModifydate(new Date());
+        appInfo.setCreatedby(devuser.getId());
+        appInfo.setCreationdate(new Date());
         appInfoService.update(appInfo);
         return "redirect:/dev/app/list";
+
     }
 
     /**

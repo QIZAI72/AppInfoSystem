@@ -19,12 +19,34 @@ public class SysInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        //获取session
+        // 目前 session dev (userdev)  backend (backuser)
         Object devuser = request.getSession().getAttribute("devuser");
-        if (devuser!=null){
+        Object backuser = request.getSession().getAttribute("backuser");
+        if (devuser!=null||backuser!=null){
             return true;
         }
-        response.sendRedirect("/jsp/devlogin.jsp");
+        response.sendRedirect("/index.jsp");
+//        if (request.getRequestURI().startsWith("/dev")){
+//            // 获取session (dev)
+//            Object devuser = request.getSession().getAttribute("devuser");
+//            if (devuser!=null){
+//                return true;
+//            }
+//            response.sendRedirect("/jsp/devlogin.jsp");
+//        }else if (request.getRequestURI().startsWith("/backuser")){
+//            // 获取session (backuser)
+//            Object backuser = request.getSession().getAttribute("backuser");
+//            if (backuser!=null){
+//                return true;
+//            }
+//            response.sendRedirect("/jsp/backendlogin.jsp");
+//        }else {
+//            Object devuser = request.getSession().getAttribute("devuser");
+//            Object backuser = request.getSession().getAttribute("backuser");
+//            if (devuser!=null||backuser!=null){
+//                return true;
+//            }
+//        }
         return false;
     }
 }

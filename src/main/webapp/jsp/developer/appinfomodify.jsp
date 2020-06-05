@@ -16,8 +16,8 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">软件名称 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input id="softwareName" class="form-control col-md-7 col-xs-12" 
-               data-validate-length-range="20" data-validate-words="1" 
+              <input id="softwareName" class="form-control col-md-7 col-xs-12"
+               data-validate-length-range="20" data-validate-words="1"
                name="softwarename" value="${appInfo.softwarename}" required="required"
                placeholder="请输入软件名称" type="text">
             </div>
@@ -26,18 +26,18 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">APK名称 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input id="APKName" type="text" class="form-control col-md-7 col-xs-12" 
+              <input id="APKName" type="text" class="form-control col-md-7 col-xs-12"
               name="apkname" value="${appInfo.apkname}" readonly="readonly">
             </div>
           </div>
-          
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">支持ROM <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input id="supportROM" class="form-control col-md-7 col-xs-12" 
+              <input id="supportROM" class="form-control col-md-7 col-xs-12"
               	name="supportrom" value="${appInfo.supportrom}" required="required"
-              	data-validate-length-range="20" data-validate-words="1" 
+              	data-validate-length-range="20" data-validate-words="1"
               	placeholder="请输入支持的ROM" type="text">
             </div>
           </div>
@@ -45,7 +45,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">界面语言 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input id="interfaceLanguage" class="form-control col-md-7 col-xs-12" 
+              <input id="interfaceLanguage" class="form-control col-md-7 col-xs-12"
               data-validate-length-range="20" data-validate-words="1"  required="required"
               name="interfacelanguage" value="${appInfo.interfacelanguage}"
               placeholder="请输入软件支持的界面语言" type="text">
@@ -59,7 +59,7 @@
               data-validate-minmax="10,500"  placeholder="请输入软件大小，单位为Mb" class="form-control col-md-7 col-xs-12">
             </div>
           </div>
-          
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="number">下载次数 <span class="required">*</span>
             </label>
@@ -75,7 +75,7 @@
               <select name="flatformid" id="flatformId" class="form-control" required="required"></select>
             </div>
           </div>
-          
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="select">一级分类 <span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -83,7 +83,7 @@
               <select name="categorylevel1" id="categoryLevel1" class="form-control"  required="required"></select>
             </div>
           </div>
-          
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12"  for="select">二级分类 <span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -91,7 +91,7 @@
               <select name="categorylevel2" id="categoryLevel2" class="form-control"  required="required"></select>
             </div>
           </div>
-          
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="select">三级分类 <span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -103,7 +103,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">APP状态 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-            	<input id="statusName" type="text" class="form-control col-md-7 col-xs-12" 
+            	<input id="statusName" type="text" class="form-control col-md-7 col-xs-12"
               	name="statusname" value="${appInfo.statusname}" readonly="readonly">
             </div>
           </div>

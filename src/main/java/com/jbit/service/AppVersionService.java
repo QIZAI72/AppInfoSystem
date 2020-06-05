@@ -33,7 +33,7 @@ public class AppVersionService {
         List<AppVersion> appVersions = appVersionMapper.selectByExample(example);
         appVersions.forEach(app->{
             // 处理AppName
-            app.setApname(appInfoService.queryById(app.getAppid()).getSoftwarename());
+            app.setAppname(appInfoService.queryById(app.getAppid()).getSoftwarename());
             // 处理发布状态
             app.setPublishstatusname(dataDictionaryService.queryData("PUBLISH_STATUS",app.getPublishstatus()).getValuename());
         });
@@ -55,5 +55,19 @@ public class AppVersionService {
      */
     public void save(AppVersion appVersion) {
         appVersionMapper.insertSelective(appVersion);
+    }
+
+    /**
+     * 修改appVersion
+     * @param appVersion
+     */
+    public void update(AppVersion appVersion){
+        appVersionMapper.updateByPrimaryKeySelective(appVersion);
+    }
+
+    public int deleteByAppId(Long appId){
+        AppVersion appVersion = new AppVersion();
+        appVersion.setAppid(appId);
+        return appVersionMapper.delete(appVersion);
     }
 }

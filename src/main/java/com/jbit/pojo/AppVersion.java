@@ -58,7 +58,7 @@ public class AppVersion implements Serializable {
     private String publishstatusname;
 
     @Transient
-    private String apname;
+    private String appname;
 
     private static final long serialVersionUID = 1L;
 }

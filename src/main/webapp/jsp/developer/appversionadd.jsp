@@ -90,7 +90,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="name">版本号 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input id="versionNo" class="form-control col-md-7 col-xs-12" 
+              <input id="versionNo" class="form-control col-md-7 col-xs-12"
                data-validate-length-range="20" data-validate-words="1" name="versionno"
                placeholder="请输入版本号" type="text"  required="required">
             </div>
@@ -103,19 +103,19 @@
               data-validate-minmax="10,500"  placeholder="请输入版本大小，单位为Mb" class="form-control col-md-7 col-xs-12">
             </div>
           </div>
-       
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12"  for="select">发布状态 <span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12">
               <input type="hidden" name="publishstatus" id="publishStatus" value="3">预发布
             </div>
           </div>
-        
+
           <div class="item form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">版本简介 <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <textarea id="versioninfo" name="versionInfo" required="required"
+              <textarea id="versioninfo" name="versioninfo" required="required"
               placeholder="请输入本版本的相关信息，本信息作为该版本的详细信息进行版本介绍。" class="form-control col-md-7 col-xs-12"></textarea>
             </div>
           </div>

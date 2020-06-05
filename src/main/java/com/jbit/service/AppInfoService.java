@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -65,7 +67,9 @@ public class AppInfoService {
         if (queryCategoryLevel3!=null&&queryCategoryLevel3!=0){
             criteria.andEqualTo("categorylevel3",queryCategoryLevel3);
         }
-        criteria.andEqualTo("devid",devId);
+        if(devId!=null) {
+            criteria.andEqualTo("devid", devId);
+        }
         example.orderBy("creationdate").desc();
         List<AppInfo> appInfos = appInfoMapper.selectByExample(example);
         // 绑定其它数据
@@ -114,11 +118,22 @@ public class AppInfoService {
     public AppInfo queryById(Long id) {
         AppInfo appInfo = appInfoMapper.selectByPrimaryKey(id);
         // 处理状态名称
-        appInfo.setStatusname(dataDictionaryService.queryData("APP_STATUS",appInfo.getStatus()).getValuename());
+        // appInfo.setStatusname(dataDictionaryService.queryData("APP_STATUS",appInfo.getStatus()).getValuename());
+        bindData(Arrays.asList(appInfo));
         return appInfo;
     }
 
-    public void update(AppInfo appInfo) {
-        appInfoMapper.updateByPrimaryKeySelective(appInfo);
+    public int update(AppInfo appInfo) {
+        return appInfoMapper.updateByPrimaryKeySelective(appInfo);
+    }
+
+    @Transactional
+    public int delete(Long id) {
+        int result = 0;
+        // 1.删除版本信息
+        result += appVersionService.deleteByAppId(id);
+        // 2.删除App信息
+        result += appInfoMapper.deleteByPrimaryKey(id);
+        return result;
     }
 }

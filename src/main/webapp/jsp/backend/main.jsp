@@ -4,7 +4,7 @@
 <div class="page-title">
 	<div class="title_left">
 		<h3>
-			欢迎你：${sessionScope.devuser.devname }<strong> | 角色：开发者账户</strong>
+			欢迎你：${sessionScope.backuser.username }<strong> | 角色：${sessionScope.backuser.usertypename}</strong>
 		</h3>
 	</div>
 </div>
